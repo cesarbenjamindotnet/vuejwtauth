@@ -12,6 +12,10 @@ export default function (auth) {
       state.token = token
     },
 
+    setRefreshToken (state, refresh_token) {
+      state.refresh_token = refresh_token
+    },
+
     setRememberToken (state, rememberToken) {
       state.rememberToken = !!rememberToken
     },
@@ -20,6 +24,7 @@ export default function (auth) {
       state.logged = false
       state.user = {}
       state.token = null
+      state.refresh_token = null
       state.rememberToken = false
     }
   }

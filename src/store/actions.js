@@ -37,8 +37,10 @@ export default function (auth) {
      */
     async initialize (context) {
       let token = await drivers.tokenStorage.getToken()
+      let refresh_token = await drivers.tokenStorage.getRefreshToken()
       if (token) {
         context.commit('setToken', token)
+        context.commit('setRefreshToken', refresh_token)
         context.commit('setRememberToken', true)
         try {
           await context.dispatch('refreshToken')
@@ -96,9 +98,19 @@ export default function (auth) {
         credentials,
         context.getters.token
       )
-        .then(methods.mapLoginResponseToToken.bind({ auth, context }))
-        .then(token => context.commit('setToken', token))
-        .then(() => context.commit('setLogged', true))
+        .then(methods.mapLoginResponseData.bind({ auth, context }))
+        .then(data => {
+          context.commit('setToken', data.access_token)
+          context.commit('setRefreshToken', data.refresh_token)
+          context.commit('setUser', data.user)
+          context.commit('setLogged', true)
+        })
+
+        //.then(methods.mapLoginResponseToToken.bind({ auth, context }))
+        //.then(token => context.commit('setToken', token))
+        //.then(methods.mapLoginResponseToRefreshToken.bind({ auth, context })) // niji
+        //.then(refresh_token => context.commit('setRefreshToken', refresh_token)) // niji
+        //.then(() => context.commit('setLogged', true))
         .catch(error => {
           emitAfterActionEvent('attemptLogin', false)
           throw error
@@ -138,14 +150,16 @@ export default function (auth) {
      * @return Promise<token>
      */
     async refreshToken (context) {
+      let today = new Date();
+      let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      console.log(time)
       const token = await methods.refreshToken.call(
         { auth, context },
         options.apiEndpoints.refreshToken.method,
         options.apiEndpoints.refreshToken.url,
-        context.getters.token
+        context.getters.refresh_token
       )
         .then(methods.mapRefreshTokenResponseToToken.bind({ auth, context }))
-
       context.commit('setToken', token)
 
       // We do NOT wait for user fetching finishes
@@ -183,7 +197,6 @@ export default function (auth) {
         context.getters.token
       )
         .then(methods.mapFetchUserResponseToUserData.bind({ auth, context }))
-
       context.commit('setUser', user)
 
       emitAfterActionEvent('fetchUser', user)

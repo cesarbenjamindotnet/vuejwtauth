@@ -17,8 +17,16 @@ export default function (auth) {
       return state.token
     },
 
+    refresh_token (state) {
+      return state.refresh_token
+    },
+
     decodedToken (state) {
       return auth.options.drivers.tokenDecoder.decode(state.token)
+    },
+
+    decodedRefreshToken (state) {
+      return auth.options.drivers.tokenDecoder.decode(state.refresh_token)
     },
 
     rememberToken (state) {

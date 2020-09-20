@@ -40,4 +40,13 @@ export class AxiosHttpDriver {
       ...config
     })
   }
+
+  async sendRefreshRequest (method, url, token, data = {}, config = {}) {
+    return this.sendRequest(method, url, data, {
+      headers: {
+        [this.options.authorizationHeader]: `${this.options.tokenType} ${token}`
+      },
+      ...config
+    })
+  }
 }

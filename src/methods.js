@@ -40,8 +40,8 @@ export async function serverSideLogout (method, url, token) {
  * @param token
  * @return Promise<response>
  */
-export async function refreshToken (method, url, token) {
-  return this.auth.options.drivers.http.sendAuthenticatedRequest(method, url, token)
+export async function refreshToken (method, url, refresh_token) {
+  return this.auth.options.drivers.http.sendRequest(method, url, {refresh:refresh_token})
 }
 
 /**
@@ -72,9 +72,16 @@ export async function attemptLogin (method, url, credentials) {
  * @param response
  * @return token
  */
-export function mapLoginResponseToToken (response) {
-  return response.data.token
+
+export function mapLoginResponseData (response) {
+  return response.data
 }
+
+export function mapLoginResponseToToken (response) {
+  return response.data.access_token
+}
+
+
 
 /**
  * Responsible for mapping `refreshToken` response to token.
@@ -83,7 +90,7 @@ export function mapLoginResponseToToken (response) {
  * @return token
  */
 export function mapRefreshTokenResponseToToken (response) {
-  return response.data.token
+  return response.data.access
 }
 
 /**
@@ -93,5 +100,5 @@ export function mapRefreshTokenResponseToToken (response) {
  * @return user data object
  */
 export function mapFetchUserResponseToUserData (response) {
-  return response.data.user
+  return response.data
 }

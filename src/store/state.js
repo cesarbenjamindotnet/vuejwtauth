@@ -19,6 +19,11 @@ export default function (auth) {
     token: null,
 
     /**
+     * Holding actual refresh token
+     */
+    refresh_token: null,
+
+    /**
      * Holding the information, whether user wants to be remembered. In case when this is `true`, access token will be
      * remembered using the token storage.
      */

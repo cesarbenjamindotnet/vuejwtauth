@@ -8,7 +8,7 @@ export const defaultOptions = {
   module: 'auth',
   namespacedModule: true,
 
-  autoLogout: true,
+  autoLogout: false,
 
   autoInitializeLoggedUser: true,
 
@@ -44,20 +44,20 @@ export const defaultOptions = {
 
   apiEndpoints: {
     fetchUser: {
-      method: 'post',
-      url: 'user'
+      method: 'get',
+      url: 'user/'
     },
     logout: {
       method: 'post',
-      url: 'logout'
+      url: 'logout/'
     },
     refreshToken: {
       method: 'post',
-      url: 'refresh'
+      url: 'token/refresh/'
     },
     login: {
       method: 'post',
-      url: 'login'
+      url: 'login/'
     }
   },
 
