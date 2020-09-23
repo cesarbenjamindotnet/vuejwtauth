@@ -1,10 +1,10 @@
 export default function (auth) {
   // Shortcuts
-  let { options } = auth
-  let { drivers, methods } = options
+  let {options} = auth
+  let {drivers, methods} = options
 
   // Helpers
-  function emitAfterActionEvent (action, result) {
+  function emitAfterActionEvent(action, result) {
     auth.emit(`action.${action}.after`, {
       action: action,
       result: result,
@@ -35,7 +35,8 @@ export default function (auth) {
      * @param context
      * @return Promise<logged>
      */
-    async initialize (context) {
+
+    async initialize(context) {
       let token = await drivers.tokenStorage.getToken()
       let refresh_token = await drivers.tokenStorage.getRefreshToken()
       if (token) {
@@ -86,19 +87,19 @@ export default function (auth) {
      * @param rememberToken
      * @return Promise<logged>
      */
-    async attemptLogin (context, { credentials, rememberToken }) {
+    async attemptLogin(context, {credentials, rememberToken}) {
       context.commit('logout')
       context.commit('setRememberToken', rememberToken)
 
       // Wait for this result, so caller context will be resolved after this finishes
       await methods.attemptLogin.call(
-        { auth, context },
+        {auth, context},
         options.apiEndpoints.login.method,
         options.apiEndpoints.login.url,
         credentials,
         context.getters.token
       )
-        .then(methods.mapLoginResponseData.bind({ auth, context }))
+        .then(methods.mapLoginResponseData.bind({auth, context}))
         .then(data => {
           context.commit('setToken', data.access_token)
           context.commit('setRefreshToken', data.refresh_token)
@@ -118,12 +119,12 @@ export default function (auth) {
 
       // Run following code asynchronously, so the caller context will NOT wait until this finishes
       setTimeout(async () => {
-          if (auth.options.refreshTokenAfterLogin) {
-            await context.dispatch('refreshToken')
-          }
-          if (!auth.options.fetchUserAfterTokenRefreshed && auth.options.fetchUserAfterLogin) {
-            await context.dispatch('fetchUser')
-          }
+        if (auth.options.refreshTokenAfterLogin) {
+          await context.dispatch('refreshToken')
+        }
+        if (!auth.options.fetchUserAfterTokenRefreshed && auth.options.fetchUserAfterLogin) {
+          await context.dispatch('fetchUser')
+        }
       }, 0)
 
       emitAfterActionEvent('attemptLogin', true)
@@ -149,17 +150,17 @@ export default function (auth) {
      * @param context
      * @return Promise<token>
      */
-    async refreshToken (context) {
+    async refreshToken(context) {
       let today = new Date();
       let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
       console.log(time)
       const token = await methods.refreshToken.call(
-        { auth, context },
+        {auth, context},
         options.apiEndpoints.refreshToken.method,
         options.apiEndpoints.refreshToken.url,
         context.getters.refresh_token
       )
-        .then(methods.mapRefreshTokenResponseToToken.bind({ auth, context }))
+        .then(methods.mapRefreshTokenResponseToToken.bind({auth, context}))
       context.commit('setToken', token)
 
       // We do NOT wait for user fetching finishes
@@ -189,14 +190,14 @@ export default function (auth) {
      * @param context
      * @return Promise<user>
      */
-    async fetchUser (context) {
+    async fetchUser(context) {
       const user = await methods.fetchUser.call(
-        { auth, context },
+        {auth, context},
         options.apiEndpoints.fetchUser.method,
         options.apiEndpoints.fetchUser.url,
         context.getters.token
       )
-        .then(methods.mapFetchUserResponseToUserData.bind({ auth, context }))
+        .then(methods.mapFetchUserResponseToUserData.bind({auth, context}))
       context.commit('setUser', user)
 
       emitAfterActionEvent('fetchUser', user)
@@ -221,13 +222,13 @@ export default function (auth) {
      * @param context
      * @return Promise<response>
      */
-    async logout (context) {
+    async logout(context) {
       let token = context.getters.token
 
       context.commit('logout')
 
       return methods.serverSideLogout.call(
-        { auth, context },
+        {auth, context},
         options.apiEndpoints.logout.method,
         options.apiEndpoints.logout.url,
         token
