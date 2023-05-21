@@ -45,19 +45,19 @@ export const defaultOptions = {
   apiEndpoints: {
     fetchUser: {
       method: 'get',
-      url: 'user/'
+      url: '/user/'
     },
     logout: {
       method: 'post',
-      url: 'logout/'
+      url: '/logout/'
     },
     refreshToken: {
       method: 'post',
-      url: 'token/refresh/'
+      url: '/token/refresh/'
     },
     login: {
       method: 'post',
-      url: 'login/'
+      url: '/login/'
     }
   },
 
@@ -72,7 +72,7 @@ export const defaultOptions = {
   },
   // Those objects will be directly passed into router.push()
   redirects: {
-    unauthenticated: { path: '/login' },
+    unauthenticated: { path: '/login/' },
     authenticated: { path: '/' }
   }
 }
