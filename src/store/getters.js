@@ -18,15 +18,12 @@ export default function (auth) {
     },
 
     refresh_token (state) {
+      console.log('refresh_token', state.refresh_token)
       return state.refresh_token
     },
 
     decodedToken (state) {
       return auth.options.drivers.tokenDecoder.decode(state.token)
-    },
-
-    decodedRefreshToken (state) {
-      return auth.options.drivers.tokenDecoder.decode(state.refresh_token)
     },
 
     rememberToken (state) {

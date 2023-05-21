@@ -17,10 +17,6 @@ export default function (auth) {
      * Holding actual access token
      */
     token: null,
-
-    /**
-     * Holding actual refresh token
-     */
     refresh_token: null,
 
     /**

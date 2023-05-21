@@ -1,7 +1,7 @@
 import { deepMerge } from '../../utils'
 
 export const LocalStorageTokenStorageDriverDefaultOptions = {
-  tokenKey: 'access_token'
+  tokenKey: 'auth_token'
 }
 
 export class LocalStorageTokenStorageDriver {

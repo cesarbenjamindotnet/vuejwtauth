@@ -1,11 +1,11 @@
 import Vuex from 'vuex'
-import {deepMerge} from './utils'
+import { deepMerge } from './utils'
 import createStoreModule from './store'
-import {mergeOptions} from './options'
-import {EventEmitter2} from 'eventemitter2'
+import { mergeOptions } from './options'
+import { EventEmitter2 } from 'eventemitter2'
 
 export class VueJwtAuth {
-  constructor({Vue, router, store, options}) {
+  constructor ({ Vue, router, store, options }) {
     if (!router) {
       throw 'VueRouter instance is required'
     }
@@ -44,7 +44,7 @@ export class VueJwtAuth {
     this.emit('ready', this)
   }
 
-  initializeStore() {
+  initializeStore () {
     this.store.registerModule(this.options.module, createStoreModule(this))
 
     this.context = this.options.namespacedModule
@@ -71,25 +71,21 @@ export class VueJwtAuth {
     })
   }
 
-  initializeTokenStoage() {
+  initializeTokenStoage () {
     if (this.options.autoSyncTokenStoage) {
       this.store.subscribe((mutation, state) => {
         // Save token to the storage after `setToken` mutation was commited
         if (mutation.type === this.prefix('setToken')) {
           let token = this.context.getters.token
-          let refresh_token = this.context.getters.refresh_token
           if (this.context.getters.rememberToken && token !== undefined && token !== null) {
             this.options.drivers.tokenStorage.setToken(token)
-            if (refresh_token) this.options.drivers.tokenStorage.setRefreshToken(refresh_token)
           } else {
             this.options.drivers.tokenStorage.deleteToken()
-            this.options.drivers.tokenStorage.deleteRefreshToken()
           }
         }
         // Remove token from the storage after `logout` mutation was commited
         if (mutation.type === this.prefix('logout')) {
           this.options.drivers.tokenStorage.deleteToken()
-          this.options.drivers.tokenStorage.deleteRefreshToken()
         }
       })
     }
@@ -97,22 +93,22 @@ export class VueJwtAuth {
 
   // TODO: spravit z toho `TokenRefresherDriver`
   // tie optiony ktore sa toho tykaju dat ako default config toho drivera
-  initializeTokenAutoRefresher() {
+  initializeTokenAutoRefresher () {
     if (this.options.autoRefreshToken) {
       let self = this
       this.tokenRefresher = {
-        clearTimeout() {
+        clearTimeout () {
           if (this.refreshTokenTimeout) {
             clearTimeout(this.refreshTokenTimeout)
           }
         },
 
-        setTimeout(timeout) {
+        setTimeout (timeout) {
           this.clearTimeout()
           this.refreshTokenTimeout = setTimeout(this.refreshTokenHandler.bind(this), timeout * 1000)
         },
 
-        refreshTokenHandler() {
+        refreshTokenHandler () {
           if (self.context.getters.logged) {
             return self.context.dispatch('refreshToken')
           }
@@ -129,19 +125,21 @@ export class VueJwtAuth {
         if (mutation.type === this.prefix('setToken')) {
           this.tokenRefresher.clearTimeout()
           let token = this.context.getters.token
+          console.log("token", this.context.getters)
           let decodedToken = this.options.drivers.tokenDecoder.decode(token)
           let now = Math.floor(0 + new Date() / 1000)
-          let serverNowDelta = now - decodedToken.exp
-          let refreshIn = decodedToken.exp - decodedToken.exp - serverNowDelta - this.options.refreshTokenSecondsAhead
+          let serverNowDelta = now - decodedToken.iat
+          let refreshIn = decodedToken.exp - decodedToken.iat - serverNowDelta - this.options.refreshTokenSecondsAhead
           refreshIn = Math.max(this.options.minRefreshTokenSeconds, refreshIn)
           refreshIn = Math.min(this.options.maxRefreshTokenSeconds, refreshIn)
+          console.log("refreshIn", refreshIn)
           this.tokenRefresher.setTimeout(refreshIn)
         }
       })
     }
   }
 
-  initializeEvents() {
+  initializeEvents () {
     this.eventEmitter.on('action.attemptLogin.after', (data) => {
       if (data.result) {
         this.eventEmitter.emit('login.success', data)
@@ -151,11 +149,11 @@ export class VueJwtAuth {
     })
   }
 
-  initializeAutoLogout() {
+  initializeAutoLogout () {
     this.options.drivers.idleDetector.registerEvents()
     this.options.drivers.idleDetector.resetTimer(false)
 
-    this.on('mutation.setLogged', ({payload}) => {
+    this.on('mutation.setLogged', ({ payload }) => {
       if (payload) {
         this.options.drivers.idleDetector.resetTimer(false)
       }
@@ -171,11 +169,11 @@ export class VueJwtAuth {
     })
   }
 
-  initializeLoggedUser() {
+  initializeLoggedUser () {
     return this.context.dispatch('initialize')
   }
 
-  initializeRouterGuard() {
+  initializeRouterGuard () {
     this.router.beforeEach((to, from, next) => {
       // If not ready, do nothing
       if (!this.context.getters.ready) {
@@ -190,7 +188,7 @@ export class VueJwtAuth {
         } else {
           // We are not logged, so we need to login first
           next(deepMerge(
-            {params: {nextUrl: to.fullPath}},
+            { params: { nextUrl: to.fullPath } },
             this.options.redirects.unauthenticated
           ))
         }
@@ -210,13 +208,13 @@ export class VueJwtAuth {
     })
   }
 
-  initializeRouterRedirects() {
+  initializeRouterRedirects () {
     this.store.subscribe((mutation, state) => {
       this.redirectIfNeed()
     })
   }
 
-  redirectIfNeed() {
+  redirectIfNeed () {
     if (this.router.currentRoute.matched.some(route =>
       route.meta[this.options.authMeta.key] ===
       this.options.authMeta.value.authenticated
@@ -229,7 +227,7 @@ export class VueJwtAuth {
       if (!this.context.getters.logged) {
         // We are not logged, so we need to login first
         this.router.push(deepMerge(
-          {params: {nextUrl: this.router.currentRoute.fullPath}},
+          { params: { nextUrl: this.router.currentRoute.fullPath } },
           this.options.redirects.unauthenticated
         ))
       }
@@ -245,7 +243,7 @@ export class VueJwtAuth {
     }
   }
 
-  prefix(name) {
+  prefix (name) {
     if (name === null || name === undefined) {
       if (this.options.namespacedModule) {
         return this.options.module
@@ -261,104 +259,95 @@ export class VueJwtAuth {
     }
   }
 
-  unprefix(name) {
+  unprefix (name) {
     return (this.options.namespacedModule)
       ? name.slice(this.options.module.length + 1)
       : name
   }
 
   /* Proxy actions */
-  initialize() {
+  initialize () {
     return this.context.dispatch('initialize')
   }
-
-  attemptLogin(credentials, rememberToken) {
-    return this.context.dispatch('attemptLogin', {credentials, rememberToken})
+  attemptLogin (credentials, rememberToken) {
+    return this.context.dispatch('attemptLogin', { credentials, rememberToken })
   }
-
-  refreshToken() {
+  refreshToken () {
     return this.context.dispatch('refreshToken')
   }
-
-  fetchUser() {
+  fetchUser () {
     return this.context.dispatch('fetchUser')
   }
-
-  logout() {
+  logout () {
     return this.context.dispatch('logout')
   }
 
   /* Proxy getters */
-  get logged() {
+  get logged () {
     return this.context.getters.logged
   }
-
-  get ready() {
+  get ready () {
     return this.context.getters.ready
   }
-
-  get user() {
+  get user () {
     return this.context.getters.user
   }
-
-  get token() {
+  get token () {
     return this.context.getters.token
   }
-
-  get decodedToken() {
+  get decodedToken () {
     return this.context.getters.decodedToken
   }
-
-  get rememberToken() {
+  get rememberToken () {
     return this.context.getters.rememberToken
   }
 
   /* Proxy emitter */
-  on(...params) {
+  on (...params) {
     return this.eventEmitter.on(...params)
   }
 
-  prependListener(...params) {
+  prependListener (...params) {
     return this.eventEmitter.prependListener(...params)
   }
 
-  onAny(...params) {
+  onAny (...params) {
     return this.eventEmitter.onAny(...params)
   }
 
-  prependAny(...params) {
+  prependAny (...params) {
     return this.eventEmitter.prependAny(...params)
   }
 
-  once(...params) {
+  once (...params) {
     return this.eventEmitter.once(...params)
   }
 
-  prependOnceListener(...params) {
+  prependOnceListener (...params) {
     return this.eventEmitter.prependOnceListener(...params)
   }
 
-  many(...params) {
+  many (...params) {
     return this.eventEmitter.many(...params)
   }
 
-  prependMany(...params) {
+  prependMany (...params) {
     return this.eventEmitter.prependMany(...params)
   }
 
-  removeListener(...params) {
+  removeListener (...params) {
     return this.eventEmitter.removeListener(...params)
   }
 
-  off(...params) {
+  off (...params) {
     return this.eventEmitter.off(...params)
   }
 
-  offAny(...params) {
+  offAny (...params) {
     return this.eventEmitter.offAny(...params)
   }
 
-  emit(...params) {
+  emit (...params) {
     return this.eventEmitter.emit(...params)
   }
 }

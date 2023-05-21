@@ -8,7 +8,7 @@ export const defaultOptions = {
   module: 'auth',
   namespacedModule: true,
 
-  autoLogout: false,
+  autoLogout: true,
 
   autoInitializeLoggedUser: true,
 

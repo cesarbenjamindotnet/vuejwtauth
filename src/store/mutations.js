@@ -5,10 +5,12 @@ export default function (auth) {
     },
 
     setUser (state, user) {
+      console.log('setUser', user)
       state.user = user || {}
     },
 
     setToken (state, token) {
+      console.log('setToken', token)
       state.token = token
     },
 
@@ -24,7 +26,6 @@ export default function (auth) {
       state.logged = false
       state.user = {}
       state.token = null
-      state.refresh_token = null
       state.rememberToken = false
     }
   }
