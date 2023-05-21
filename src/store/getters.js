@@ -18,7 +18,6 @@ export default function (auth) {
     },
 
     refresh_token (state) {
-      console.log('refresh_token', state.refresh_token)
       return state.refresh_token
     },
 

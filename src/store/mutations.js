@@ -5,12 +5,10 @@ export default function (auth) {
     },
 
     setUser (state, user) {
-      console.log('setUser', user)
       state.user = user || {}
     },
 
     setToken (state, token) {
-      console.log('setToken', token)
       state.token = token
     },
 

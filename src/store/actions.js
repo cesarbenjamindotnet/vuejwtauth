@@ -97,7 +97,6 @@ export default function (auth) {
                 context.getters.token
             )
                 .then(response => {
-                    console.log("attemptLogin response", response)
                     context.commit('setUser', response.data.user)
                     context.commit('setRefreshToken', response.data.refresh_token)
                     return response
@@ -152,8 +151,6 @@ export default function (auth) {
                 )
                 .then(methods.mapRefreshTokenResponseToToken.bind({auth, context}))
                 .then(data => {
-                    console.log("refreshToken setToken", data)
-
                     context.commit('setToken', data.access)
                 })
 
@@ -194,7 +191,6 @@ export default function (auth) {
                 context.getters.token
                 )
                 .then(methods.mapFetchUserResponseToUserData.bind({auth, context}))
-            console.log("fetchUser", user)
 
             context.commit('setUser', user)
 
