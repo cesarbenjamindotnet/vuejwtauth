@@ -1,5 +1,7 @@
 # JSON Web Tokens auth for [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/)
 
+Este código está completamente roto. NO USAR! En su lugar, preferir djoser
+
 **This is a client-side** [JSON Web Tokens (JWT)](https://jwt.io/) authentication package for [Vue.js](https://vuejs.org/) and [Quasar](https://quasar.dev/) applications.
 
 **This is not a server-side solution.** If you need a server-side JWT auth, then take a look at our Laravel server-side package. - *comming soon*
